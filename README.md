@@ -1,6 +1,6 @@
 # Edge Detection Explorer: Sobel vs. Canny
 
-## 📌 Project Summary
+## Project Summary
 
 This project is an interactive Streamlit app that demonstrates and compares two fundamental edge detection methods in image processing:
 
@@ -60,19 +60,23 @@ The goal of this app is to help users:
 ```bash
 git clone https://github.com/DarioWalker9493/Exercise2_EdgeDetectionDemo
 cd Excercise2_EdgeDetectionDemo
+```
 
 ### 2. Create a virtual environment
 python -m venv venv
 ```bash
 venv\Scripts\activate
+```
 
 ### 3. Install dependencies
 ```bash
 pip install -r requirements.txt
+```
 
 ### 4. Run the app
 ```bash
 streamlit run app.py
+```
 
 ## Limitations
 
