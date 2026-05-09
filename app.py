@@ -13,6 +13,10 @@ uploaded_file = st.sidebar.file_uploader("Upload an image", type=["png", "jpg", 
 st.sidebar.header("Sobel Controls")
 sobel_threshold = st.sidebar.slider("Sobel Threshold", 0, 255, 100)
 
+st.sidebar.header("Canny Controls")
+canny_low = st.sidebar.slider("Canny Low Threshold", 0, 255, 50)
+canny_high = st.sidebar.slider("Canny High Threshold", 0, 255, 150)
+
 def load_image(file):
     image = Image.open(file).convert("RGB")
     return np.array(image)
@@ -34,12 +38,17 @@ def compute_sobel_edges(image_rgb, threshold):
 
     return gray, magnitude, sobel_edges
 
+def compute_canny_edges(gray, low_threshold, high_threshold):
+    edges = cv2.Canny(gray, low_threshold, high_threshold)
+    return edges
+
 if uploaded_file is None:
     st.info("Please upload an image to get started.")
     st.stop()
 
 image = load_image(uploaded_file)
 gray, sobel_magnitude, sobel_edges = compute_sobel_edges(image, sobel_threshold)
+canny_edges = compute_canny_edges(gray, canny_low, canny_high)
 
 col1, col2, col3 = st.columns(3)
 
@@ -48,15 +57,18 @@ with col1:
     st.image(image, use_container_width=True)
 
 with col2:
-    st.subheader("Sobel Gradient Magnitude")
-    st.image(sobel_magnitude, use_container_width=True, clamp=True)
+    st.subheader("Sobel Edges")
+    st.image(sobel_edges, use_container_width=True, clamp=True)
 
 with col3:
-    st.subheader("Thresholded Sobel Edges")
-    st.image(sobel_edges, use_container_width=True, clamp=True)
+    st.subheader("Canny Edges")
+    st.image(canny_edges, use_container_width=True, clamp=True)
+
+st.subheader("Diagnostic View")
+st.image(sobel_magnitude, caption="Sobel Gradient Magnitude", use_container_width=True, clamp=True)
 
 st.subheader("Interpretation")
 st.write(
-    "Sobel highlights regions where image intensity changes strongly. "
-    "Increasing the threshold keeps only stronger edges, but weak details may disappear."
+    "Sobel highlights intensity changes and requires a threshold to create a binary edge map. "
+    "Canny uses a stronger edge detection pipeline and typically produces thinner, cleaner edges."
 )
