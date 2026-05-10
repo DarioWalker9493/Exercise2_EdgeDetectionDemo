@@ -2,6 +2,7 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 import cv2
+import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Edge Detection Explorer", layout="wide")
 
@@ -90,6 +91,23 @@ with col3:
 
 st.subheader("Diagnostic View")
 st.image(sobel_magnitude, caption="Sobel Gradient Magnitude", use_container_width=True, clamp=True)
+
+st.subheader("Gradient Histogram")
+
+fig, ax = plt.subplots()
+ax.hist(sobel_magnitude.ravel(), bins=50)
+ax.axvline(sobel_threshold, linestyle="--", label="Sobel threshold")
+ax.set_xlabel("Gradient magnitude")
+ax.set_ylabel("Pixel count")
+ax.set_title("Distribution of Sobel gradient values")
+ax.legend()
+
+st.pyplot(fig)
+
+st.caption(
+    "The histogram shows how many pixels have low or high gradient strength. "
+    "The threshold line determines which pixels become Sobel edges."
+)
 
 st.subheader("Interpretation")
 st.write(
