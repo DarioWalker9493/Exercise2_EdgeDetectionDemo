@@ -17,6 +17,9 @@ st.sidebar.header("Canny Controls")
 canny_low = st.sidebar.slider("Canny Low Threshold", 0, 255, 50)
 canny_high = st.sidebar.slider("Canny High Threshold", 0, 255, 150)
 
+st.sidebar.header("Preprocessing")
+sigma = st.sidebar.slider("Gaussian Blur (sigma)", 0.0, 5.0, 1.0)
+
 def load_image(file):
     image = Image.open(file).convert("RGB")
     return np.array(image)
@@ -47,8 +50,29 @@ if uploaded_file is None:
     st.stop()
 
 image = load_image(uploaded_file)
-gray, sobel_magnitude, sobel_edges = compute_sobel_edges(image, sobel_threshold)
-canny_edges = compute_canny_edges(gray, canny_low, canny_high)
+gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+
+if sigma > 0:
+    ksize = int(6 * sigma + 1)
+    if ksize % 2 == 0:
+        ksize += 1
+    blurred = cv2.GaussianBlur(gray, (ksize, ksize), sigma)
+else:
+    blurred = gray
+
+sobel_x = cv2.Sobel(blurred, cv2.CV_64F, 1, 0, ksize=3)
+sobel_y = cv2.Sobel(blurred, cv2.CV_64F, 0, 1, ksize=3)
+
+sobel_magnitude = np.sqrt(sobel_x**2 + sobel_y**2)
+
+if sobel_magnitude.max() > 0:
+    sobel_magnitude = (255 * sobel_magnitude / sobel_magnitude.max()).astype(np.uint8)
+else:
+    sobel_magnitude = sobel_magnitude.astype(np.uint8)
+
+_, sobel_edges = cv2.threshold(sobel_magnitude, sobel_threshold, 255, cv2.THRESH_BINARY)
+
+canny_edges = cv2.Canny(blurred, canny_low, canny_high)
 
 col1, col2, col3 = st.columns(3)
 
