@@ -3,6 +3,7 @@ from PIL import Image
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+from scipy import ndimage
 
 st.set_page_config(page_title="Edge Detection Explorer", layout="wide")
 
@@ -109,6 +110,30 @@ st.caption(
     "The threshold line determines which pixels become Sobel edges."
 )
 
+st.subheader("Metrics")
+
+sobel_edge_ratio = np.mean(sobel_edges > 0) * 100
+canny_edge_ratio = np.mean(canny_edges > 0) * 100
+
+sobel_components, sobel_num_components = ndimage.label(sobel_edges > 0)
+canny_components, canny_num_components = ndimage.label(canny_edges > 0)
+
+mean_gradient_on_sobel_edges = np.mean(sobel_magnitude[sobel_edges > 0]) if np.any(sobel_edges > 0) else 0
+mean_gradient_on_canny_edges = np.mean(sobel_magnitude[canny_edges > 0]) if np.any(canny_edges > 0) else 0
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.metric("Sobel edge pixels", f"{sobel_edge_ratio:.2f}%")
+    st.metric("Sobel components", sobel_num_components)
+    st.metric("Mean gradient on Sobel edges", f"{mean_gradient_on_sobel_edges:.1f}")
+
+with col2:
+    st.metric("Canny edge pixels", f"{canny_edge_ratio:.2f}%")
+    st.metric("Canny components", canny_num_components)
+    st.metric("Mean gradient on Canny edges", f"{mean_gradient_on_canny_edges:.1f}")
+
+    
 st.subheader("Interpretation")
 st.write(
     "Sobel highlights intensity changes and requires a threshold to create a binary edge map. "
