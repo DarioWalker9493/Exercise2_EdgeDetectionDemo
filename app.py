@@ -4,13 +4,39 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from scipy import ndimage
+from pathlib import Path
 
 st.set_page_config(page_title="Edge Detection Explorer", layout="wide")
 
 st.title("Edge Detection Explorer: Sobel vs. Canny")
 
 st.sidebar.header("Input")
-uploaded_file = st.sidebar.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])
+
+sample_dir = Path("sample_images")
+sample_files = list(sample_dir.glob("*.jpg")) + list(sample_dir.glob("*.png")) + list(sample_dir.glob("*.jpeg"))
+
+input_mode = st.sidebar.radio(
+    "Choose input source",
+    ["Upload image", "Use sample image"]
+)
+
+uploaded_file = None
+selected_sample = None
+
+if input_mode == "Upload image":
+    uploaded_file = st.sidebar.file_uploader(
+        "Upload an image",
+        type=["png", "jpg", "jpeg"]
+    )
+else:
+    if sample_files:
+        selected_sample = st.sidebar.selectbox(
+            "Select sample image",
+            sample_files,
+            format_func=lambda x: x.name
+        )
+    else:
+        st.sidebar.warning("No sample images found in sample_images/.")
 
 st.sidebar.header("Sobel Controls")
 sobel_threshold = st.sidebar.slider("Sobel Threshold", 0, 255, 100)
@@ -47,11 +73,18 @@ def compute_canny_edges(gray, low_threshold, high_threshold):
     edges = cv2.Canny(gray, low_threshold, high_threshold)
     return edges
 
-if uploaded_file is None:
-    st.info("Please upload an image to get started.")
-    st.stop()
+if input_mode == "Upload image":
+    if uploaded_file is None:
+        st.info("Please upload an image to get started.")
+        st.stop()
+    image = load_image(uploaded_file)
 
-image = load_image(uploaded_file)
+else:
+    if selected_sample is None:
+        st.info("Please add sample images to the sample_images folder.")
+        st.stop()
+    image = np.array(Image.open(selected_sample).convert("RGB"))
+    
 gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 
 if sigma > 0:
@@ -133,7 +166,7 @@ with col2:
     st.metric("Canny components", canny_num_components)
     st.metric("Mean gradient on Canny edges", f"{mean_gradient_on_canny_edges:.1f}")
 
-    
+
 st.subheader("Interpretation")
 st.write(
     "Sobel highlights intensity changes and requires a threshold to create a binary edge map. "
