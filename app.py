@@ -39,7 +39,7 @@ else:
         st.sidebar.warning("No sample images found in sample_images/.")
 
 st.sidebar.header("Sobel Controls")
-sobel_threshold = st.sidebar.slider("Sobel Threshold", 0, 255, 100)
+sobel_threshold = st.sidebar.slider("Sobel Threshold", 0, 255, 50)
 
 st.sidebar.header("Canny Controls")
 canny_low, canny_high = st.sidebar.slider(
