@@ -63,24 +63,42 @@ cd Excercise2_EdgeDetectionDemo
 ```
 
 ### 2. Create a virtual environment
+```bash
 python -m venv venv
+```
+
+### 3. Activate the environment (Windows)
 ```bash
 venv\Scripts\activate
 ```
 
-### 3. Install dependencies
+
+### 4. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Run the app
+### 5. Run the app
 ```bash
 streamlit run app.py
 ```
 
 ## Limitations
 
-Still add this
+- Sobel is sensitive to noise and may detect unwanted texture as edges.
+- Canny edge detection strongly depends on threshold selection.
+- The app currently works only on grayscale edge detection internally.
+- Performance may decrease for very large images.
+- The metrics are simplified and intended for educational comparison rather than rigorous benchmarking.
+- Only Sobel and Canny methods are implemented; more advanced approaches such as Laplacian of Gaussian or deep learning-based edge detection are not included.
+
+## Future Improvements
+
+Possible future extensions include:
+
+- Additional edge detection algorithms
+- Color edge detection
+- Automatic threshold optimization
 
 ## Author
 Dario Walker
