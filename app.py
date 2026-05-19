@@ -42,8 +42,13 @@ st.sidebar.header("Sobel Controls")
 sobel_threshold = st.sidebar.slider("Sobel Threshold", 0, 255, 100)
 
 st.sidebar.header("Canny Controls")
-canny_low = st.sidebar.slider("Canny Low Threshold", 0, 255, 50)
-canny_high = st.sidebar.slider("Canny High Threshold", 0, 255, 150)
+canny_low, canny_high = st.sidebar.slider(
+    "Canny Threshold Range",
+    min_value=0,
+    max_value=255,
+    value=(50, 150),
+    step=1
+)
 
 st.sidebar.header("Preprocessing")
 sigma = st.sidebar.slider("Gaussian Blur (sigma)", 0.0, 5.0, 1.0)
